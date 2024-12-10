@@ -1,4 +1,5 @@
-print("starting...")
+import sys, json;
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,9 +11,6 @@ from sampy.spatial.built_in_graph_intersections import Intersection2DGraphsConve
 from sampy.addons.ORM_related_addons.ORM_like_agents import ORMLikeAgent
 from sampy.disease.single_species.builtin_disease import ContactCustomProbTransitionPermanentImmunity
 from sampy.intervention.built_in_interventions import BasicVaccination
-
-# Prep for results storage
-output_path = "ORM_outs"
 
 # create the landscape (will remove when real map is created)
 map_2d = nlmpy.randomClusterNN(nRow=194, nCol=209, n='8-neighbourhood', p=0.3)
@@ -154,4 +152,7 @@ for i in range(years * 52 + 1):
     if i % 52 == 0:
         print(i/52)
         
-np.savetxt(output_path + "/outputs.csv", outs, delimiter=',', header="Week, total_pop, n_incubation, n_infectious", comments="")
+json_object = json.dumps(outs, indent = 2)
+
+with open(sys.argv[1] + '/output.json', "w") as outfile:
+  outfile.write(json_object)
