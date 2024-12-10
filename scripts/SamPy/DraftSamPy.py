@@ -1,5 +1,8 @@
 import sys, json;
 
+# Reading input.json
+inputFile = open(sys.argv[1] + '/input.json')
+data = json.load(inputFile)
 
 import numpy as np
 import matplotlib.pyplot as plt
