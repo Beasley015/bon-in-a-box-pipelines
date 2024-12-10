@@ -1,0 +1,39 @@
+script: DraftSamPy.py 
+name: Draft Sampy script
+Description: Runs a basic agent-based model using SamPy 
+author:
+    - name: Emily Beasley (beasley.em@gmail.com)
+
+inputs:
+    sampy.graph.builtin_graph: 
+        label: SamPy graph
+        description: Functions for creating spatial graphs used in the SamPy modeling framework
+        type: text
+    sampy.spatial.built_in_graph_intersections:
+        label: SamPy graph intersections
+        description: More functions for creating spatial graphs used in the SamPy modeling framework
+        type: text
+    sampy.addons.ORM_related_addons.ORM_like_agents:
+        label: ORM-like agents
+        description: Functions for creating agents similar to those in the Ontario Rabies Model (ORM)
+        type: text
+    sampy.disease.single_species.builtin_disease:
+        label: SamPy disease object
+        description: Functions for creating SamPy's single-species disease
+        type: text
+    sampy.intervention.built_in_interventions:
+        label: SamPy disease interventions
+        description: Functions for simulating management actions such as vaccination and culling
+        type: text
+
+outputs:
+    result:
+        label: model results
+        description: Results of the simulations in .csv format
+        type: text/csv
+
+conda: # Optional, only needed if your script has specific package dependencies
+  channels: # programs that you need
+    - python
+  dependencies: # any packages that are dependent on a specfic version
+    - python-numpy=2.0.2
