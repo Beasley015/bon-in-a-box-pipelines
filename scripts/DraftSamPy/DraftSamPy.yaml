@@ -1,4 +1,5 @@
-script: SamPy/DraftSamPy.py 
+
+script: DraftSamPy/DraftSamPy.py 
 name: Draft Sampy script
 Description: Runs a basic agent-based model using SamPy 
 author:
