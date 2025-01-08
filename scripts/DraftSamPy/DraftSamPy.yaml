@@ -7,4 +7,8 @@ author:
 inputs:
     
 outputs:
+    pop_result:
+        label: Weekly population data 
+        description: Weekly population size and number of rabies cases, in CSV form
+        type: text/csv
 
