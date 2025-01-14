@@ -1,5 +1,5 @@
 import sys, json;
-
+'''
 import numpy as np
 import matplotlib.pyplot as plt
 import nlmpy
@@ -150,13 +150,14 @@ for i in range(years * 52 + 1):
 
     if i % 52 == 0:
         print(i/52)
+'''
 
+outs = 4
 
 dictionary = {
   "pop_result": outs
 }
 
 json_object = json.dumps(dictionary, indent = 2)
-
-with open(sys.argv[1] + '/outputs.json') as outfile:
+with open(sys.argv[1] + '/outputs.json',"w") as outfile:
   outfile.write(json_object)
