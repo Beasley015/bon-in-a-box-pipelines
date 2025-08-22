@@ -1,0 +1,212 @@
+{
+  "nodes": [
+    {
+      "id": "0",
+      "type": "io",
+      "position": {
+        "x": 29,
+        "y": 205.6666717529297
+      },
+      "data": {
+        "descriptionFile": "sampy>loadFromStac_reduced.yml"
+      }
+    },
+    {
+      "id": "2",
+      "type": "io",
+      "position": {
+        "x": 394,
+        "y": 281.6666717529297
+      },
+      "data": {
+        "descriptionFile": "sampy>MakeGrid.yml"
+      }
+    },
+    {
+      "id": "3",
+      "type": "io",
+      "position": {
+        "x": 882.5910561774492,
+        "y": 207.42480683302148
+      },
+      "data": {
+        "descriptionFile": "sampy>PrepSpatialData.yml"
+      }
+    },
+    {
+      "id": "4",
+      "type": "io",
+      "position": {
+        "x": 1601.7534730138327,
+        "y": 202.12385535756897
+      },
+      "data": {
+        "descriptionFile": "sampy>SamPy.yml"
+      }
+    },
+    {
+      "id": "5",
+      "type": "io",
+      "position": {
+        "x": 2126.547669083627,
+        "y": 200.3568715324181
+      },
+      "data": {
+        "descriptionFile": "sampy>Visualize.yml"
+      }
+    },
+    {
+      "id": "6",
+      "type": "output",
+      "position": {
+        "x": 2652.3907709449745,
+        "y": 165.92004945575903
+      },
+      "data": {
+        "label": "Output"
+      }
+    },
+    {
+      "id": "7",
+      "type": "output",
+      "position": {
+        "x": 2653.8568032946728,
+        "y": 272.6965480354345
+      },
+      "data": {
+        "label": "Output"
+      }
+    },
+    {
+      "id": "8",
+      "type": "output",
+      "position": {
+        "x": 2667,
+        "y": 215.6666717529297
+      },
+      "data": {
+        "label": "Output"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "0",
+      "sourceHandle": "rasters",
+      "target": "2",
+      "targetHandle": "rasters",
+      "id": "reactflow__edge-0rasters-2rasters"
+    },
+    {
+      "source": "2",
+      "sourceHandle": "raw_grid",
+      "target": "3",
+      "targetHandle": "raw_grid",
+      "id": "reactflow__edge-2raw_grid-3raw_grid"
+    },
+    {
+      "source": "0",
+      "sourceHandle": "rasters",
+      "target": "3",
+      "targetHandle": "rasters",
+      "id": "reactflow__edge-0rasters-3rasters"
+    },
+    {
+      "source": "3",
+      "sourceHandle": "K_grid",
+      "target": "4",
+      "targetHandle": "K_grid",
+      "id": "reactflow__edge-3K_grid-4K_grid"
+    },
+    {
+      "source": "0",
+      "sourceHandle": "rasters",
+      "target": "4",
+      "targetHandle": "rasters",
+      "id": "reactflow__edge-0rasters-4rasters"
+    },
+    {
+      "source": "4",
+      "sourceHandle": "pop_result",
+      "target": "5",
+      "targetHandle": "pop_result",
+      "id": "reactflow__edge-4pop_result-5pop_result"
+    },
+    {
+      "source": "4",
+      "sourceHandle": "cell_values",
+      "target": "5",
+      "targetHandle": "cell_values",
+      "id": "reactflow__edge-4cell_values-5cell_values"
+    },
+    {
+      "source": "2",
+      "sourceHandle": "raw_grid",
+      "target": "5",
+      "targetHandle": "raw_grid",
+      "id": "reactflow__edge-2raw_grid-5raw_grid"
+    },
+    {
+      "source": "5",
+      "sourceHandle": "pop_fig",
+      "target": "6",
+      "targetHandle": null,
+      "id": "reactflow__edge-5pop_fig-6"
+    },
+    {
+      "source": "5",
+      "sourceHandle": "disease_map",
+      "target": "7",
+      "targetHandle": null,
+      "id": "reactflow__edge-5disease_map-7"
+    },
+    {
+      "source": "5",
+      "sourceHandle": "disease_figure",
+      "target": "8",
+      "targetHandle": null,
+      "id": "reactflow__edge-5disease_figure-8"
+    }
+  ],
+  "inputs": {
+    "sampy>loadFromStac_reduced.yml@0|stac_url": {
+      "description": "URL of the STAC catalog.",
+      "label": "STAC URL",
+      "type": "text",
+      "example": "https://stac.geobon.org/",
+      "weight": 0
+    },
+    "sampy>loadFromStac_reduced.yml@0|bbox": {
+      "description": "Vector of float, bbox coordinates of the extent in the order xmin, ymin, xmax, ymax",
+      "label": "Bounding box",
+      "type": "float[]",
+      "example": [
+        -74.07131834227772,
+        42.56134435842028,
+        -71.40427444981111,
+        45.32488403343622
+      ],
+      "weight": 1
+    }
+  },
+  "outputs": {
+    "sampy>Visualize.yml@5|pop_fig": {
+      "description": "Weekly rabies cases over the course of the simulation",
+      "label": "Epicurve figure",
+      "type": "jpeg",
+      "weight": 0
+    },
+    "sampy>Visualize.yml@5|disease_map": {
+      "description": "Map of total rabies cases across the simulation",
+      "label": "Case map",
+      "type": "jpeg",
+      "weight": 1
+    },
+    "sampy>Visualize.yml@5|disease_figure": {
+      "description": "Map of total rabies cases across the simulation in png format",
+      "label": "Case map, image",
+      "type": "png",
+      "weight": 2
+    }
+  }
+}

@@ -1,0 +1,35 @@
+script: SamPy.py
+name: Sampy script
+Description: Runs a basic agent-based model using SamPy
+author:
+    - name: Emily Beasley
+
+inputs:
+    K_grid:
+        label: Carrying capacity grid
+        description: geojson containing spatial information of the hexagonal grid
+        type: geojson
+    rasters:
+        label: rasters for grid creation
+        description: array of output raster paths
+        type: image/tiff;application=geotiff[]
+
+outputs:
+    pop_result:
+        label: Weekly population data 
+        description: Weekly population size and number of rabies cases, in CSV form
+        type: csv
+    cell_values:
+        label: Spatially explicit case data
+        description: Number of rabies cases per week, per grid cell, in csv form
+        type: csv
+
+conda:
+    channels:
+        - conda-forge
+    dependencies:
+        - numpy
+        - pandas
+        - unicodecsv
+        - geopandas
+        - rasterio

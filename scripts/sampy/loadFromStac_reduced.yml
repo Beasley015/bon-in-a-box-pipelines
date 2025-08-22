@@ -1,0 +1,40 @@
+script: loadFromStac_reduced.R
+name: Load from STAC
+description: "Extract individual unprocessed items from various collections on the GEO BON STAC catalog. Reduced for use with SamPy."
+author:
+  - name: Guillaume Larocque
+    identifier: https://orcid.org/0000-0002-5967-9156
+  - name: Emily M. Beasley
+
+inputs:
+  stac_url:
+    label: STAC URL
+    description: URL of the STAC catalog.
+    type: text
+    example: https://stac.geobon.org/
+  bbox:
+    label: Bounding box
+    description: Vector of float, bbox coordinates of the extent in the order xmin, ymin, xmax, ymax
+    type: float[]
+    example: [-74.07131834227772, 42.56134435842028, -71.40427444981111, 45.32488403343622]
+  
+outputs:
+  rasters:
+    label: Rasters
+    description: array of output raster paths
+    type: image/tiff;application=geotiff[]
+
+conda:
+  channels:
+    - conda-forge
+    - r
+  dependencies:
+    - libgdal
+    - proj
+    - r-proj
+    - r-gdalcubes=0.7.1
+    - r-rstac
+    - r-dplyr
+    - r-rcurl
+    - r-rjson
+    - r-sf

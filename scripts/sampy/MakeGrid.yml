@@ -1,0 +1,26 @@
+script: MakeGrid.py
+name: Make Hexagonal Grid 
+Description: Creates a hexagonal grid for SamPy using user-defined bounding box
+author:
+  - name: Emily Beasley
+
+inputs:
+  rasters: 
+    label: rasters for grid creation
+    description: array of output raster paths
+    type: image/tiff;application=geotiff[]
+
+outputs:
+  raw_grid:
+    label: Raw hexagonal grid
+    description: geojson containing spatial information of the hexagonal grid
+    type: geojson
+
+conda:
+  channels:
+    - conda-forge
+  dependencies:
+    - numpy
+    - rasterio
+    - geojson
+    - geopandas

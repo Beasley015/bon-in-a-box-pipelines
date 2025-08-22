@@ -1,0 +1,47 @@
+script: Visualize.R
+name: Final figure script
+Description: Visualizes SamPy outputs
+author:
+    - name: Emily Beasley
+
+inputs:
+    pop_result:
+        label: Population outputs
+        description: Population-level results from SamPy
+        type: csv
+        example: null
+    cell_values:
+        label: Spatially explicit case data
+        description: Number of rabies cases per week, per grid cell, in csv form
+        type: csv
+    raw_grid:
+        label: Raw hexagonal grid
+        description: geojson containing spatial information of the hexagonal grid
+        type: geojson
+
+outputs:
+    pop_fig:
+        label: Epicurve figure
+        description: Weekly rabies cases over the course of the simulation
+        type: png
+    disease_figure:
+        label: Case map, image
+        description: Map of total rabies cases across the simulation in png format
+        type: png
+    disease_map:
+        label: Case map, geoTIFF
+        description: Map of total rabies cases across the simulation in geojson format
+        type: geojson
+
+conda:
+    channels:
+        - conda-forge
+        - r
+    dependencies:
+        - r-tidyverse
+        - r-sf
+        - r-rnaturalearth
+        - r-viridis
+        - r-rjson
+        - r-rnaturalearthdata
+        - r-raster

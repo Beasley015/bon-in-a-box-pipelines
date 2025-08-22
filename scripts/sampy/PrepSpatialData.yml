@@ -1,0 +1,34 @@
+script: PrepSpatialData.R
+name: Add spatial attributes to hexagonal grid
+Description: Add carrying capacity to hexagonal grid used in SamPy
+author:
+  - name: Emily Beasley
+
+inputs:
+  rasters: 
+    label: land cover raster
+    description: raster of land cover data on which the hexagonal grid is overlaid
+    type: image/tiff;application=geotiff[]
+    example: cec_land_cover.tif
+  raw_grid:
+    label: raw hexagonal grid
+    description: hexagonal grid of study area with no attributes
+    type: geojson
+
+outputs:
+  K_grid:
+    label: Carrying capacity grid
+    description: geojson containing spatial information of the hexagonal grid
+    type: geojson
+
+conda:
+  channels:
+    - conda-forge
+    - r
+  dependencies:
+    - r-tidyverse
+    - r-units
+    - r-rjson
+    - r-sf
+    - r-terra
+    - r-exactextractr
