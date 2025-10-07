@@ -14,11 +14,20 @@ inputs:
     label: raw hexagonal grid
     description: hexagonal grid of study area with no attributes
     type: geojson
+  cases:
+    label: rabies cases
+    description: file path to .csv containing coordinates of raccoon rabies cases, in lat/long format
+    type: text/csv
+    example: null
 
 outputs:
   K_grid:
     label: Carrying capacity grid
     description: geojson containing spatial information of the hexagonal grid
+    type: geojson
+  case_grid:
+    label: Case grid
+    description: geojson containing cells with known raccoon rabies cases (coming soon-differentiation by year)
     type: geojson
 
 conda:

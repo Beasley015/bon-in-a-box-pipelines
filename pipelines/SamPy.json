@@ -26,8 +26,8 @@
       "id": "3",
       "type": "io",
       "position": {
-        "x": 882.5910561774492,
-        "y": 207.42480683302148
+        "x": 838.5910561774492,
+        "y": 196.42480683302148
       },
       "data": {
         "descriptionFile": "sampy>PrepSpatialData.yml"
@@ -86,6 +86,18 @@
       },
       "data": {
         "label": "Output"
+      }
+    },
+    {
+      "id": "11",
+      "type": "userInput",
+      "position": {
+        "x": 432.71865220703125,
+        "y": 127.35551389648441
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "text/csv"
       }
     }
   ],
@@ -166,16 +178,16 @@
       "target": "8",
       "targetHandle": null,
       "id": "reactflow__edge-5disease_figure-8"
+    },
+    {
+      "source": "11",
+      "sourceHandle": null,
+      "target": "3",
+      "targetHandle": "cases",
+      "id": "reactflow__edge-11-3cases"
     }
   ],
   "inputs": {
-    "sampy>loadFromStac_reduced.yml@0|stac_url": {
-      "description": "URL of the STAC catalog.",
-      "label": "STAC URL",
-      "type": "text",
-      "example": "https://stac.geobon.org/",
-      "weight": 0
-    },
     "sampy>loadFromStac_reduced.yml@0|bbox": {
       "description": "Vector of float, bbox coordinates of the extent in the order xmin, ymin, xmax, ymax",
       "label": "Bounding box",
@@ -186,7 +198,21 @@
         -71.40427444981111,
         45.32488403343622
       ],
+      "weight": 0
+    },
+    "sampy>loadFromStac_reduced.yml@0|stac_url": {
+      "description": "URL of the STAC catalog.",
+      "label": "STAC URL",
+      "type": "text",
+      "example": "https://stac.geobon.org/",
       "weight": 1
+    },
+    "pipeline@11": {
+      "label": "rabies cases",
+      "description": "file path to .csv containing coordinates of raccoon rabies cases, in lat/long format",
+      "type": "text/csv",
+      "example": null,
+      "weight": 2
     }
   },
   "outputs": {
