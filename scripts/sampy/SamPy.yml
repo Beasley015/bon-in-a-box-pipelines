@@ -13,6 +13,10 @@ inputs:
         label: rasters for grid creation
         description: array of output raster paths
         type: image/tiff;application=geotiff[]
+    cases:
+        label: initial cases
+        description: geojson containing locations of cases to initialize the disease
+        type: geojson
 
 outputs:
     pop_result:

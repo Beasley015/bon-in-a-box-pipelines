@@ -185,6 +185,13 @@
       "target": "3",
       "targetHandle": "cases",
       "id": "reactflow__edge-11-3cases"
+    },
+    {
+      "source": "3",
+      "sourceHandle": "case_grid",
+      "target": "4",
+      "targetHandle": "cases",
+      "id": "reactflow__edge-3case_grid-4cases"
     }
   ],
   "inputs": {

@@ -63,6 +63,11 @@ disease = ContactCustomProbTransitionPermanentImmunity(disease_name='disease', h
 convert_times = np.array(range(1,9))
 convert_probs = np.array([0.99, 0.95, 0.75, 0.6, 0.25, 0.05, 0.01, 0])
 
+# Load starting cases
+cases = geopandas.read_file(inputs['cases'])
+if len(cases.index) != 0:
+  dis_indices = [i for i, x in enumerate(cases['case']) if x == 1]
+
 # Define simulation length
 years = 6
 
@@ -112,11 +117,18 @@ for i in range(years * 52 + 1):
     
   # Initialize disease at year 2
   if i == 53:
-    arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in random.sample(range(0, graph.number_vertices),5)],
+    if len(cases.index)!=0:
+      arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in dis_indices],
+                                                            level=0.01)
+                                
+      disease.initialize_counters_of_newly_infected(arr_new_contamination, convert_times, convert_probs)
+
+    else:
+      arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in random.sample(range(0, graph.number_vertices),5)],
                                                              level=0.01)
 
-    # Determine how long each agent will be in diseased state
-    disease.initialize_counters_of_newly_infected(arr_new_contamination, 
+      # Determine how long each agent will be in diseased state
+      disease.initialize_counters_of_newly_infected(arr_new_contamination, 
                                           convert_times,  # 1d array of timesteps
                                           convert_probs) # 1d array of prob of staying in incubation at time step i
     
