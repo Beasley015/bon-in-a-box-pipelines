@@ -89,6 +89,12 @@ if(is.null(inputs$cases) == F){
   case.grid <- grid
   case.grid$case <- 0
   case.grid$case[inters.bin] <- 1
+  
+} else {
+  
+  case.grid <- grid
+  case.grid$case <- 0
+  
 }
 
 # Feature to come: Management -------------
@@ -97,13 +103,8 @@ if(is.null(inputs$cases) == F){
 K_grid <- file.path(outputFolder, "spatial_features.geojson")
 st_write(K.grid, dsn=K_grid, append = F)
 
-if(exists("case.grid")==T){
-  case_grid <- file.path(outputFolder, "cases.geojson")
-  st_write(case.grid, dsn=case_grid, append=F)
-}
+case_grid <- file.path(outputFolder, "cases.geojson")
+st_write(case.grid, dsn=case_grid, append=F)
 
 biab_output("K_grid", K_grid)
-
-if(exists("case_grid")==T){
-  biab_output("case_grid", case_grid)
-}
+biab_output("case_grid", case_grid)

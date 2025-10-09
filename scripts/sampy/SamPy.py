@@ -65,8 +65,8 @@ convert_probs = np.array([0.99, 0.95, 0.75, 0.6, 0.25, 0.05, 0.01, 0])
 
 # Load starting cases
 cases = geopandas.read_file(inputs['cases'])
-if len(cases.index) != 0:
-  dis_indices = [i for i, x in enumerate(cases['case']) if x == 1]
+
+dis_indices = [i for i, x in enumerate(cases['case']) if x == 1]
 
 # Define simulation length
 years = 6
@@ -117,7 +117,7 @@ for i in range(years * 52 + 1):
     
   # Initialize disease at year 2
   if i == 53:
-    if len(cases.index)!=0:
+    if len(dis_indices)!=0:
       arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in dis_indices],
                                                             level=0.01)
                                 
