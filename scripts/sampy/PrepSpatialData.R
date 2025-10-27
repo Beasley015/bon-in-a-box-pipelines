@@ -77,23 +77,29 @@ K.grid$k <- as.numeric(K.grid$k)
 
 # Cases ----------------
 if(is.null(inputs$cases) == F){
+  # Read in cases and reformat
   cases <- read.csv(file=inputs$cases)
   
   case.sf <- st_as_sf(cases, coords = c(2,1))
   
   st_crs(case.sf) <- 4326
   
-  inters <- st_intersects(grid, case.sf)
-  inters.bin <- do.call(c,lapply(inters, function(x) length(x)>0))
+  # split cases by year
+  cases.list <- split(case.sf, ~year)
   
+  inters.list <- lapply(cases.list,st_intersects, grid)
+  inters.list <- lapply(inters.list, function(x) do.call(c,x))
+
   case.grid <- grid
-  case.grid$case <- 0
-  case.grid$case[inters.bin] <- 1
+  case.grid[names(inters.list)] <- 0
+  
+  for(i in 1:length(inters.list)){
+    case.grid[inters.list[[i]], 2+i] <- 1
+  }
   
 } else {
   
   case.grid <- grid
-  case.grid$case <- 0
   
 }
 

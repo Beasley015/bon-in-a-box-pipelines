@@ -29,7 +29,7 @@ outputs:
         description: Map of total rabies cases across the simulation in png format
         type: png
     disease_map:
-        label: Case map, geoTIFF
+        label: Cases, geojson
         description: Map of total rabies cases across the simulation in geojson format
         type: geojson
 

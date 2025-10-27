@@ -36,109 +36,130 @@ Ks = geopandas.read_file(inputs['K_grid'])
 # Add Ks to grid
 graph.df_attributes['K'] = Ks['k']
 
-# create the population object
-agents = ORMLikeAgent(graph=graph)
-
-# add some raccoons
-first_guys = dict()
-first_guys['age'] = [random.randint(52, 52*8) for _ in range(int(sum(graph.df_attributes['K'])/2))]
-first_guys['gender'] = [i % 2 for i in range(int(sum(graph.df_attributes['K'])/2))]
-first_guys['territory'] = [random.randint(0,graph.number_vertices-1) for _ in range(int(sum(graph.df_attributes['K'])/2))]
-first_guys['position'] = first_guys['territory'] # start within their territory, but they can move later
-
-agents.add_agents(first_guys)
-
-# Define weekly non-disease mortality
-weekly_mort = []
-for x in [0.5, 0.3, 0.2, 0.2, 0.2, 0.5, 0.5, 0.6, 1.0]: # these are annual mortalities
-    for _ in range(52):
-        weekly_mort.append(x)
-weekly_mort = np.array(weekly_mort)
-weekly_mort = 1 - (1 - weekly_mort) ** (1. / 52.) # convert to weekly mortality
-
-# Create disease object
-disease = ContactCustomProbTransitionPermanentImmunity(disease_name='disease', host=agents)
-
-# Probs for transitioning from incubation to infectious
-convert_times = np.array(range(1,9))
-convert_probs = np.array([0.99, 0.95, 0.75, 0.6, 0.25, 0.05, 0.01, 0])
-
-# Load starting cases
-cases = geopandas.read_file(inputs['cases'])
-
-dis_indices = [i for i, x in enumerate(cases['case']) if x == 1]
-
-# Define simulation length
-years = 6
-
 # Create blank np array for output storage
-outs = np.empty(shape=[0,4])
+outs = np.empty(shape=[0,5])
 
 # Creat blank list for maps 
 list_fig = []
 
-for i in range(years * 52 + 1):
+for rep in range(0,2):
 
-  agents.tick()
-  graph.tick()
-  disease.tick()
-    
-  # Non-disease mortality
-  agents.kill_too_old(52 * 8 - 1) 
-  agents.natural_death_orm_methodology(weekly_mort, weekly_mort, k_factor_attribute='K')
-  agents.kill_children_whose_mother_is_dead(20)
+  # create the population object
+  agents = ORMLikeAgent(graph=graph)
 
-  # Run around 
-  agents.mov_around_territory(0.25, condition=agents.df_population['age'] >= 11) 
+  # add some raccoons
+  first_guys = dict()
+  first_guys['age'] = [random.randint(52, 52*8) for _ in range(int(sum(graph.df_attributes['K'])/2))]
+  first_guys['gender'] = [i % 2 for i in range(int(sum(graph.df_attributes['K'])/2))]
+  first_guys['territory'] = [random.randint(0,graph.number_vertices-1) for _ in range(int(sum(graph.df_attributes['K'])/2))]
+  first_guys['position'] = first_guys['territory'] # start within their territory, but they can move later
 
-  # Disease dynamics
-  arr_new_infected = disease.contact_contagion(0.001, return_arr_new_infected=True)
-  disease.initialize_counters_of_newly_infected(arr_new_infected, convert_times, convert_probs)
-  disease.transition_between_states('con', 'death', proba_death=1) 
-  disease.transition_between_states('inf', 'con', 
-                                arr_nb_timestep=np.array(convert_times),
-                                arr_prob_nb_timestep=np.array(convert_probs))
-  disease.transition_between_states('inf', 'imm', arr_prob_nb_timestep=0.002) # Some never become contagious
+  agents.add_agents(first_guys)
 
-  # Find mate at given time step
-  if i % 52 == 9: 
-    agents.find_random_mate_on_position(1., position_attribute='territory')
+  # Define weekly non-disease mortality
+  weekly_mort = []
+  for x in [0.5, 0.3, 0.2, 0.2, 0.2, 0.5, 0.5, 0.6, 1.0]: # these are annual mortalities
+      for _ in range(52):
+          weekly_mort.append(x)
+  weekly_mort = np.array(weekly_mort)
+  weekly_mort = 1 - (1 - weekly_mort) ** (1. / 52.) # convert to weekly mortality
 
-  # Reproduce at a given time step
-  if i % 52 == 18: 
-    agents.create_offsprings_custom_prob(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8]), # Vector of litter sizes 
-                                          np.array([0.05, 0.05, 0.1, 0.2, 0.2, 0.2, 0.1, 0.05, 0.05])) # Prob of each size
-    
-  # Dispersal
-  if i % 52 == 45: 
-    can_move = agents.df_population['age'] > 20
-    agents.dispersion_with_varying_nb_of_steps(np.array([0, 1, 2]), np.array([.9, .09, .01]),
-                                                condition=can_move)
-    
-  # Initialize disease at year 2
-  if i == 53:
-    if len(dis_indices)!=0:
-      arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in dis_indices],
-                                                            level=0.01)
-                                
-      disease.initialize_counters_of_newly_infected(arr_new_contamination, convert_times, convert_probs)
+  # Create disease object
+  disease = ContactCustomProbTransitionPermanentImmunity(disease_name='disease', host=agents)
 
-    else:
-      arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in random.sample(range(0, graph.number_vertices),5)],
-                                                             level=0.01)
+  # Probs for transitioning from incubation to infectious
+  convert_times = np.array(range(1,9))
+  convert_probs = np.array([0.99, 0.95, 0.75, 0.6, 0.25, 0.05, 0.01, 0])
 
-      # Determine how long each agent will be in diseased state
-      disease.initialize_counters_of_newly_infected(arr_new_contamination, 
-                                          convert_times,  # 1d array of timesteps
-                                          convert_probs) # 1d array of prob of staying in incubation at time step i
-    
-  row = [i, sum(agents.count_pop_per_vertex()),
-        sum(agents.count_pop_per_vertex(condition=agents.df_population['inf_disease'])),
-        sum(agents.count_pop_per_vertex(condition=agents.df_population['con_disease']))]
-  outs = np.vstack([outs, row])
+  # Load starting cases
+  cases = geopandas.read_file(inputs['cases'])
+  cases = cases.drop(columns=['id', 'geometry'])
 
-  list_fig.append(agents.count_pop_per_vertex(position_attribute='territory', condition=agents.df_population['inf_disease'] |
-                                                agents.df_population['con_disease']))
+  cases_ar = cases.to_numpy()
+
+  dis_indices = []
+  if cases_ar.shape[1] > 0:
+    for i in range(0,cases_ar.shape[1]):
+      dis_indices.append([yr for yr, x in enumerate(cases_ar[:,i]) if x == 1])
+
+  # Define simulation length
+  years = 6
+
+  for i in range(years * 52 + 1):
+
+    agents.tick()
+    graph.tick()
+    disease.tick()
+      
+    # Non-disease mortality
+    agents.kill_too_old(52 * 8 - 1) 
+    agents.natural_death_orm_methodology(weekly_mort, weekly_mort, k_factor_attribute='K')
+    agents.kill_children_whose_mother_is_dead(20)
+
+    # Run around 
+    agents.mov_around_territory(0.25, condition=agents.df_population['age'] >= 11) 
+
+    # Disease dynamics
+    arr_new_infected = disease.contact_contagion(0.001, return_arr_new_infected=True)
+    disease.initialize_counters_of_newly_infected(arr_new_infected, convert_times, convert_probs)
+    disease.transition_between_states('con', 'death', proba_death=1) 
+    disease.transition_between_states('inf', 'con', 
+                                  arr_nb_timestep=np.array(convert_times),
+                                  arr_prob_nb_timestep=np.array(convert_probs))
+    disease.transition_between_states('inf', 'imm', arr_prob_nb_timestep=0.002) # Some never become contagious
+
+    # Find mate at given time step
+    if i % 52 == 9: 
+      agents.find_random_mate_on_position(1., position_attribute='territory')
+
+    # Reproduce at a given time step
+    if i % 52 == 18: 
+      agents.create_offsprings_custom_prob(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8]), # Vector of litter sizes 
+                                            np.array([0.05, 0.05, 0.1, 0.2, 0.2, 0.2, 0.1, 0.05, 0.05])) # Prob of each size
+      
+    # Dispersal
+    if i % 52 == 45: 
+      can_move = agents.df_population['age'] > 20
+      agents.dispersion_with_varying_nb_of_steps(np.array([0, 1, 2]), np.array([.9, .09, .01]),
+                                                  condition=can_move)
+      
+    # Disease initialization in year 2
+    if i == 52:
+      if len(dis_indices)!=0:
+        arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in dis_indices[0]],
+                                                              level=0.03)
+                                  
+        disease.initialize_counters_of_newly_infected(arr_new_contamination, convert_times, convert_probs)
+
+      else:
+        arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in random.sample(range(0, graph.number_vertices),5)],
+                                                              level=0.03)
+
+        # Determine how long each agent will be in diseased state
+        disease.initialize_counters_of_newly_infected(arr_new_contamination, 
+                                            convert_times,  # 1d array of timesteps
+                                            convert_probs) # 1d array of prob of staying in incubation at time step i
+
+    # Additional cases after initialization
+    if i % 52 == 0 and i > 53:
+      axis = int(i/52)
+      
+      if axis <= len(dis_indices):
+        arr_new_contamination = disease.contaminate_vertices(list_vertices=[list(graph.dict_cell_id_to_ind.keys())[i] for i in dis_indices[axis-1]],
+                                                              level=0.01)
+                                  
+        disease.initialize_counters_of_newly_infected(arr_new_contamination, convert_times, convert_probs)
+          
+      
+    row = [i, rep, sum(agents.count_pop_per_vertex()),
+          sum(agents.count_pop_per_vertex(condition=agents.df_population['inf_disease'])),
+          sum(agents.count_pop_per_vertex(condition=agents.df_population['con_disease']))]
+    outs = np.vstack([outs, row])
+
+    list_fig.append(agents.count_pop_per_vertex(position_attribute='territory', condition=agents.df_population['inf_disease'] |
+                                                  agents.df_population['con_disease']))
+
+  print("rep = " + str(rep))
 
 # Save outputs
 pop_fig_path = output_folder+"/pop_result.csv"

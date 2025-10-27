@@ -16,7 +16,7 @@ inputs:
     type: geojson
   cases:
     label: rabies cases
-    description: file path to .csv containing coordinates of raccoon rabies cases, in lat/long format
+    description: file path to .csv containing coordinates of raccoon rabies cases in lat/long format and year
     type: text/csv
     example: null
 
@@ -27,7 +27,7 @@ outputs:
     type: geojson
   case_grid:
     label: Case grid
-    description: geojson containing cells with known raccoon rabies cases (coming soon-differentiation by year)
+    description: geojson containing cells with known raccoon rabies cases by year
     type: geojson
 
 conda:

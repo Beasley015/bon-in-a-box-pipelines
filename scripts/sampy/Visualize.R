@@ -5,26 +5,26 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(viridis)
 
+# Test inputs
+input <- list()
+input$pop_result <- "/home/ebeez/Documents/bon-in-a-box-pipelines/output/sampy/SamPy/5b3fee01fd5780cbedbdab8819404bb0/pop_result.csv"
+input$cell_values <- "/home/ebeez/Documents/bon-in-a-box-pipelines/output/sampy/SamPy/5b3fee01fd5780cbedbdab8819404bb0/vertices.csv"
+input$raw_grid <- "/home/ebeez/Documents/bon-in-a-box-pipelines/output/sampy/MakeGrid/26823a3cdff2b6139ee6a723e4eb4654/raw_grid.geojson"
+
 # Load in data
 input <- biab_inputs()
 
 # Get csv files
 pop_data <- read.csv(input$pop_result, header = F) %>%
-  rename(Week=V1, pop_size=V2, infected = V3, contagious=V4) %>%
-  mutate(Week = Week+1)
+  rename(Week=V1, rep=V2, pop_size=V3, infected = V4, contagious=V5) %>%
+  mutate(Week = Week+1) %>%
+  group_by(Week) %>%
+  summarise(pop_size=mean(pop_size), infected=mean(infected), 
+            contagious=mean(contagious))
 
 spat_data <- read.csv(input$cell_values)
 
 grid <- st_read(dsn = input$raw_grid)
-
-# Temp csv files:
-# pop_data <- read.csv("pop_result.csv", header = F) %>%
-#   rename(Week=V1, pop_size=V2, infected = V3, contagious=V4) %>%
-#   mutate(Week = Week+1)
-# 
-# spat_data <- read.csv("vertices.csv")
-# 
-# grid <- st_read(dsn="raw_grid.geojson")
 
 # Cases over time ----------------
 pop_fig <- ggplot(data = pop_data, aes(x = Week, y = contagious))+
@@ -42,6 +42,18 @@ poli.bounds <-  ne_download(scale = 50L, type = "states",
 
 # Clip boundaries to simulation extent
 poli.bounds <- st_crop(poli.bounds, grid)
+
+# Get major rivers
+rivers <- ne_download(scale = 10L, type = "rivers_lake_centerlines", 
+                    category = "physical")
+
+rivers <- st_crop(test, grid)
+
+# Get lakes
+lakes <- ne_download(scale = 50L, type = "lakes", 
+                     category = "physical")
+
+lakes <- st_crop(lakes, grid) #issue here, may need to turn spherical off
 
 # Summarize spatial data and add to the grid
 for(i in 1:ncol(spat_data)){
