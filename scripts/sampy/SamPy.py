@@ -100,7 +100,7 @@ for rep in range(0,2):
     agents.mov_around_territory(0.25, condition=agents.df_population['age'] >= 11) 
 
     # Disease dynamics
-    arr_new_infected = disease.contact_contagion(0.001, return_arr_new_infected=True)
+    arr_new_infected = disease.contact_contagion(0.0005, return_arr_new_infected=True)
     disease.initialize_counters_of_newly_infected(arr_new_infected, convert_times, convert_probs)
     disease.transition_between_states('con', 'death', proba_death=1) 
     disease.transition_between_states('inf', 'con', 
