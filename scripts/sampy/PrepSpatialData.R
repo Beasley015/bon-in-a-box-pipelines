@@ -103,14 +103,43 @@ if(is.null(inputs$cases) == F){
   
 }
 
-# Feature to come: Management -------------
+# Vaccination -------------
+if(is.null(inputs$vaccination) == F){
+  # Read in cases and reformat
+  vax <- read_sf(dsn=inputs$vaccination)
+  
+  st_crs(vax) <- 4326
+  
+  # Merge polygons
+  sf_use_s2(FALSE)
+  vaxp <- st_combine(vax)
+  
+  # Get intersecting grid cells
+  inter.vax.list <- st_intersects(vaxp, grid)
+  
+  # Add to grid
+  vax.grid <- grid
+  vax.grid$vax <- 0
+  vax.grid$vax[unlist(inter.vax.list)] <- 1
+  
+  sf_use_s2(TRUE)
+  
+} else {
+  
+  vax.grid <- grid
+  
+}
 
-# Save as geojson
+# Save as geojson ----------------
 K_grid <- file.path(outputFolder, "spatial_features.geojson")
 st_write(K.grid, dsn=K_grid, append = F)
 
 case_grid <- file.path(outputFolder, "cases.geojson")
 st_write(case.grid, dsn=case_grid, append=F)
 
+vax_grid <- file.path(outputFolder, "vax.geojson")
+st_write(vax.grid, dsn = vax_grid, append=F)
+
 biab_output("K_grid", K_grid)
 biab_output("case_grid", case_grid)
+biab_output("vax_grid", vax_grid)

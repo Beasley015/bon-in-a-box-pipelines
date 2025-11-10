@@ -99,6 +99,19 @@
       "data": {
         "type": "text/csv"
       }
+    },
+    {
+      "id": "12",
+      "type": "userInput",
+      "position": {
+        "x": 251.79998779296875,
+        "y": 161.39999389648438
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "application/dbf",
+        "value": null
+      }
     }
   ],
   "edges": [
@@ -192,6 +205,13 @@
       "target": "4",
       "targetHandle": "cases",
       "id": "reactflow__edge-3case_grid-4cases"
+    },
+    {
+      "source": "12",
+      "sourceHandle": null,
+      "target": "3",
+      "targetHandle": "vaccination",
+      "id": "reactflow__edge-12-3vaccination"
     }
   ],
   "inputs": {
@@ -220,6 +240,13 @@
       "type": "text/csv",
       "example": null,
       "weight": 2
+    },
+    "pipeline@12": {
+      "label": "vaccination shapefile",
+      "description": "file path to shapefile (.shp) containing vaccination year, type, and annual vaccination rate",
+      "type": "application/dbf",
+      "example": null,
+      "weight": 3
     }
   },
   "outputs": {

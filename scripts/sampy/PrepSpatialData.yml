@@ -19,6 +19,11 @@ inputs:
     description: file path to .csv containing coordinates of raccoon rabies cases in lat/long format and year
     type: text/csv
     example: null
+  vaccination:
+    label: vaccination shapefile
+    description: file path to shapefile (.shp) containing vaccination year, type, and annual vaccination rate
+    type:  application/dbf
+    example: null
 
 outputs:
   K_grid:
@@ -28,6 +33,10 @@ outputs:
   case_grid:
     label: Case grid
     description: geojson containing cells with known raccoon rabies cases by year
+    type: geojson
+  vax_grid: 
+    label: Vaccination grid
+    descripton: geojson containing cells with vaccines applied by year, vaccination type, and vaccination rate
     type: geojson
 
 conda:
