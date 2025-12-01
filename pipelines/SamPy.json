@@ -212,6 +212,13 @@
       "target": "3",
       "targetHandle": "vaccination",
       "id": "reactflow__edge-12-3vaccination"
+    },
+    {
+      "source": "3",
+      "sourceHandle": "vax_grid",
+      "target": "4",
+      "targetHandle": "vax_grid",
+      "id": "reactflow__edge-3vax_grid-4vax_grid"
     }
   ],
   "inputs": {

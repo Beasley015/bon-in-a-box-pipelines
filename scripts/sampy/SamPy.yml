@@ -17,6 +17,10 @@ inputs:
         label: initial cases
         description: geojson containing locations of cases to initialize the disease
         type: geojson
+    vax_grid:
+        label: vaccination locations
+        description: geojson containing locations of vaccination and vaccination strategy
+        type: geojson
 
 outputs:
     pop_result:

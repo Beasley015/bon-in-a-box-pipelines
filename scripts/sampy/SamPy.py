@@ -13,6 +13,7 @@ import rasterio
 from sampy.addons.GIS_interface.geographic_grid import HexGrid
 from sampy.addons.ORM_related_addons.ORM_like_agents import ORMLikeAgent
 from sampy.disease.single_species.builtin_disease import ContactCustomProbTransitionPermanentImmunity
+from sampy.intervention.built_in_interventions import BasicVaccination
 
 # Load inputs
 inputs = biab_inputs()
@@ -35,6 +36,10 @@ Ks = geopandas.read_file(inputs['K_grid'])
 
 # Add Ks to grid
 graph.df_attributes['K'] = Ks['k']
+
+# Load realistic vaccination geojson
+vax_loc = geopandas.read_file(inputs['vax_grid']) 
+vax_loc = vax_loc.drop(columns=['id', 'geometry'])
 
 # Create blank np array for output storage
 outs = np.empty(shape=[0,5])
@@ -82,6 +87,10 @@ for rep in range(0,2):
     for i in range(0,cases_ar.shape[1]):
       dis_indices.append([yr for yr, x in enumerate(cases_ar[:,i]) if x == 1])
 
+  # Create vaccination object
+  vax = BasicVaccination(disease=disease, duration_vaccine=1000)
+  # Absurd duration for essentially permanent immunity
+
   # Define simulation length
   years = 6
 
@@ -117,6 +126,27 @@ for rep in range(0,2):
       agents.create_offsprings_custom_prob(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8]), # Vector of litter sizes 
                                             np.array([0.05, 0.05, 0.1, 0.2, 0.2, 0.2, 0.1, 0.05, 0.05])) # Prob of each size
       
+    # Vaccination
+    if (i > (52*14) and i % 52 >= 38 or i % 52 <= 42):
+        col = i
+        
+        # Create vaccination array
+        #colnames = vax_loc.columns[col]
+
+        vaxprobs = np.zeros(graph.number_vertices)
+
+        vaxprobs[vax_loc['vax']==1.0] = 0.5 
+
+        # Rotary wing and bait station data from Bastille-Rousseau et al. 2024
+        # Ground baiting from Beasley et al. 2024
+        # Fixed-wing from Fehlner-Gardiner et al. 2012
+        #vaxprobs[vax_loc.index[vax_loc[colnames].values=='Fixed Wing']] = params['fixed_wing'][0]
+        #vaxprobs[vax_loc.index[vax_loc[colnames].values=='Ground']] = params['fixed_wing'][0]*0.5
+        #vaxprobs[vax_loc.index[vax_loc[colnames].values=='Rotary Wing']] = params['fixed_wing'][0]*0.5
+        #vaxprobs[vax_loc.index[vax_loc[colnames].values=='Bait Station']] = params['fixed_wing'][0]*0.15
+            
+        vax.apply_vaccine_from_array(array_vaccine_level=vaxprobs)
+    
     # Dispersal
     if i % 52 == 45: 
       can_move = agents.df_population['age'] > 20
