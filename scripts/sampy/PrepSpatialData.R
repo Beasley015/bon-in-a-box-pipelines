@@ -112,15 +112,29 @@ if(is.null(inputs$vaccination) == F){
   
   # Merge polygons
   sf_use_s2(FALSE)
-  vaxp <- st_combine(vax)
+  
+  vax <- st_make_valid(vax)
+  
+  vaxp <- vax %>%
+    group_by(year) %>%
+    summarise()
   
   # Get intersecting grid cells
   inter.vax.list <- st_intersects(vaxp, grid)
   
   # Add to grid
   vax.grid <- grid
-  vax.grid$vax <- 0
-  vax.grid$vax[unlist(inter.vax.list)] <- 1
+  
+  for(i in 1:length(inter.vax.list)){
+    newcolname <- paste("yr", i, sep = "")
+    
+    newcolvals <- rep(0, nrow(grid))
+    newcolvals[inter.vax.list[[i]]] <- 1
+    
+    vax.grid <- vax.grid %>%
+      mutate(!!newcolname := newcolvals)
+    
+  }
   
   sf_use_s2(TRUE)
   
